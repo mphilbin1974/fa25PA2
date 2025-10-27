@@ -16,8 +16,8 @@ struct MinHeap {
 
     void push(int idx, int weightArr[]) {
         // Completed TO DO: insert index at end of heap, restore order using upheap()
-        data[size] = idx; // insert global index of node at end of heap
-        upheap(size, weightArr); // restore heap - takes size as index of new node in heap and weightArr to access key value
+        data[size] = idx;
+        upheap(size, weightArr);
         size++;
     }
 
@@ -25,10 +25,10 @@ struct MinHeap {
         // Completed TO DO: remove and return smallest index
         // Replace root with last element, then call downheap()
         int root = data[0];
-        data[0] = data[size - 1];
         size--;
+        data[0] = data[size];
         downheap(0, weightArr);
-        return root; // placeholder
+        return root;
     }
 
     void upheap(int pos, int weightArr[]) {
@@ -45,32 +45,22 @@ struct MinHeap {
         }
     }
 
-    // almost done, but not quite
     void downheap(int pos, int weightArr[]) {
-        // TODO: swap parent downward while larger than any child
+        // Completed TO DO: swap parent downward while larger than any child
         while (true) {
-            int idx = data[pos];
-
             int left = 2 * pos + 1;
             int right = left + 1;
 
-            int leftIdx = data[left];
-            int rightIdx =data[right];
+            int smallest = pos;
+            if (left < size && weightArr[data[left]] < weightArr[data[smallest]]) smallest = left;
+            if (right < size && weightArr[data[right]] < weightArr[data[smallest]]) smallest = right;
+            if (smallest == pos) break;
 
-            int min; // position of smallest child
-            if (left > size) break; // CASE: node has 0 children
-            if (right > size) min = left; // CASE: node has only a left child
-            else { // CASE: node has two children --> take the smaller one
-                min = left;
-                if (weightArr[leftIdx] > weightArr[rightIdx])
-                    min = rightIdx;
-            }
-
-            int minIdx = data[min];
-            if (weightArr[idx] < weightArr[minIdx]) break;
-            data[pos] = minIdx;
-            data[min] = idx;
-            pos = min;
+            int idx = data[pos];
+            int smallestIdx = data[smallest];
+            data[pos] = smallestIdx;
+            data[smallest] = idx;
+            pos = smallest;
         }
     }
 };
