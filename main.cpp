@@ -115,7 +115,6 @@ int buildEncodingTree(int nextFree) {
         nextFree++;
     }
     int root = heap.pop(weightArr);
-
     return root;
 }
 
@@ -141,7 +140,8 @@ void generateCodes(int root, string codes[]) {
         if (leftArr[node] == -1 && rightArr[node] == -1) { // node is a leaf
             int charIdx = charArr[node] - 'a';
             codes[charIdx] = code;
-        } else {
+        }
+        else {
             if (leftArr[node] != -1) // node has a left child
                 s.push({leftArr[node], code + "0"});
             if (rightArr[node] != -1) // node has a right child
