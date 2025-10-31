@@ -23,6 +23,10 @@ int buildEncodingTree(int nextFree);
 void generateCodes(int root, string codes[]);
 void encodeMessage(const string& filename, string codes[]);
 
+// Converts text in input.txt to a binary code
+// Text characters are assigned bit strings as codes
+// Stores nodes in parallel arrays, including index arrays for the encoding structure (binary tree -> left and right arrays)
+// String lengths are based on character frequency to minimize length
 int main() {
     int freq[26] = {0};
 
@@ -89,51 +93,55 @@ int createLeafNodes(int freq[]) {
 }
 
 // Step 3: Build the encoding tree using heap operations
+// Uses a given algorithm to create a binary encoding tree in parallel arrays
+// Each node (stored as parallel array values) has a left and right int that it uses as an index to its children
+// The given algorithm assigns leaf nodes and creates parents to connect them, using int `nextFree` to index new nodes
+// The final tree's leaf nodes' depths are inversely proportional to their character's frequency (the goal of the algorithm)
+// Uses a MinHeap object to create the encoding tree
 int buildEncodingTree(int nextFree) {
-    // Completed TO DO:
-    // 1. Create a MinHeap object.
     MinHeap heap;
-    // 2. Push all leaf node indices into the heap.
     for (int i = 0; i < nextFree; ++i)
         heap.push(i, weightArr);
-    // 3. While the heap size is greater than 1:
     while (heap.size > 1) {
-        //    - Pop two smallest nodes
         int firstMin = heap.pop(weightArr);
         int secondMin = heap.pop(weightArr);
-        //    - Create a new parent node with combined weight
+
         charArr[nextFree] = '_';
         weightArr[nextFree] = weightArr[firstMin] + weightArr[secondMin];
-        //    - Set left/right pointers
         leftArr[nextFree] = firstMin;
         rightArr[nextFree] = secondMin;
-        //    - Push new parent index back into the heap
+
         heap.push(nextFree, weightArr);
         nextFree++;
     }
     int root = heap.pop(weightArr);
 
-    // 4. Return the index of the last remaining node (root)
     return root;
 }
 
 // Step 4: Use an STL stack to generate codes
+// Given int `root`, the root of a binary tree stored in parallel arrays, generates binary codes representing leaf positions
+// Each left edge from the root to a leaf adds a '1' to the string, while each right edge adds a '0'
+// The final code represents a node's position; a code's length is equal to its node's depth in the tree
+// Codes are stored in string[] `codes[]`
+// Uses a stack object to traverse the encoding tree
 void generateCodes(int root, string codes[]) {
-    // Completed TO DO:
-    // Use stack<pair<int, string>> to simulate DFS traversal.
-    // Left edge adds '0', right edge adds '1'.
-    // Record code when a leaf node is reached.
+    if (leftArr[root] == -1 && rightArr[root] == -1) {
+        int charIdx = charArr[root] - 'a';
+        codes[charIdx] = "0";
+        return;
+    }
     stack<pair<int, string>> s;
     s.push({root, ""});
     while (!s.empty()) {
         int node = s.top().first;
         string code = s.top().second;
         s.pop();
+
         if (leftArr[node] == -1 && rightArr[node] == -1) { // node is a leaf
             int charIdx = charArr[node] - 'a';
             codes[charIdx] = code;
-        }
-        else {
+        } else {
             if (leftArr[node] != -1) // node has a left child
                 s.push({leftArr[node], code + "0"});
             if (rightArr[node] != -1) // node has a right child
